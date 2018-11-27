@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+
+<head>
+
+    <meta charset="UTF-8">
+    <title>HW7 Train Scheudler</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- Firebase Reference -->
+    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+
+    <!-- Moment.js Reference -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+
+    <style>
+        #employee-table th,
+    td {
+      display: inline-block;
+      width: 16.575%;
+    }
+
+    /* } */
+
+  </style>
+</head>
+
+<body>
+
+    <!-- Employee Tracker -->
+    <div class="container">
+
+        <!-- Jumbotron -->
+        <div class="jumbotron" style="background-color: black; color: white">
+            <h1 class="text-center">Anytime Is Train Time</h1>
+            <h3 class="text-center">built w/ Firebase</h3>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Add Employee  -->
+                <div class="card mb-4 p-4">
+                    <div class="card-body">Add Train
+                        <!-- Entry Form -->
+                        <form>
+                            <div class="form-group row">
+                                <label for="train-input">Train Name</label>
+                                <input class="form-control" id="train-input"  type="text">
+                            </div>
+                            <div class="form-group row">
+                                <label for="destination-input">Destination</label>
+                                <input class="form-control" id="destination-input"  type="text">
+                            </div>
+                            <div class="form-group row">
+                                <label for="first-input">First Train  (HH:mm - miilitary time)</label>
+                                <input class="form-control" id="first-input"  type="text">
+                            </div>
+                            <div class="form-group row">
+                                <label for="freq-input">Frequency (min)</label>
+                                <input class="form-control" id="freq-input"  type="text">
+                            </div>
+                            <button class="btn btn-primary float-right" id="submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <!-- Current Employees-->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        Current Employees
+                        <table class="table table-sm table-hover" id='employee-table'>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Train Name</th>
+                                    <th scope="col">Destination</th>
+                                    <th scope="col">Frequency</th>
+                                    <th scope="col">Next Arrival</th>
+                                    <th scope="col">Minuates Aaway</th>
+                                    <th scope="col">EXTRA COL</th>
+                                </tr>
+                                <tr>
+                                    <td scope="col" id="name-data"></td>
+                                    <td scope="col" id="role-data"></td>
+                                    <td scope="col" id="start-data"></td>
+                                    <td scope="col" id="months-data"></td>
+                                    <td scope="col" id="name-data"></td>
+                                    <td scope="col" id="name-data"></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <!-- <script src="timesheetLogic.js"></script> -->
+    <script src="script.js"></script>
+
+</body>
