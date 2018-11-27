@@ -15,6 +15,19 @@ var destination = "";
 var firstTime = "";
 var frequency = "";
 
+/*
+current state:
+Able to connect and add single set of values to FB-DB 
+
+Next steps:
+understand and add functionality to ADD / append values
+
+Create a function to find out NEXT ARRIVAL TIME
+
+Create a function to countdown minutes to next arrival
+
+*/
+
 $("#submit").on("click", function (event) {
   event.preventDefault();
   train = $("#train-input").val().trim();
