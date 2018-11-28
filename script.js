@@ -14,105 +14,77 @@ var train = "";
 var destination = "";
 var firstTime = "";
 var frequency = "";
+var dateAdded = "";
 
-/*
-current state:
-Able to connect and add single set of values to FB-DB 
 
-Next steps:
-understand and add functionality to ADD / append values
-
-Create a function to find out NEXT ARRIVAL TIME
-
-Create a function to countdown minutes to next arrival
-
-*/
-
+// button for adding a schedule item 
 $("#submit").on("click", function (event) {
   event.preventDefault();
+  //grabs user input
   train = $("#train-input").val().trim();
   destination = $("#destination-input").val().trim();
   firstTime = $("#first-input").val().trim();
   frequency = $("#freq-input").val().trim();
-  database.ref().set({
 
-    // console.log("i ran ");
-
+  var newEntry = {
     train: train,
     destination: destination,
     firstTime: firstTime,
-    frequency: frequency
-    // dateAdded: firebase.database.ServerValue.TIMESTAMP
+    frequency: frequency,
+    dateAdded: firebase.database.ServerValue.TIMESTAMP
+  };
+  database.ref().push(newEntry);
 
-  });
-  console.log("below: Train, Destination, firstTime and frequency ");
-  console.log(train);
-  console.log(destination);
-  console.log(firstTime);
-  console.log(frequency);
+  console.log("below: Train, Destination, firstTime, frequency, timestamp ");
+  console.log("train "+train);
+  console.log("destination "+destination);
+  console.log("firstTime "+firstTime);
+  console.log("frequency "+frequency);
+  console.log("added at timestamp "+newEntry.dateAdded);
+  //console.log(newEntry.dateAdded.val());
 });
 
-database.ref("/trains").on("value", function (snapshot) {
+//creates Firebase event for adding train to the DB and a row in the HTML when a user adds entry
+database.ref().on("child_added", function(childSnapshot){
+  console.log(childSnapshot.val());
 
-  // Print the local data to the console.
-  console.log(snapshot.val());
-  console.log("inside on value chg  ");
+  //store everything int a var
+  var chTrain = childSnapshot.val().train;
+  var chDestination = childSnapshot.val().destination;
+  var chFirstTime = childSnapshot.val().firstTime; 
+  var chFrequency = childSnapshot.val().frequency;
+  console.log("from the .on child_added event");
+  console.log(chTrain);
+  console.log(chDestination);
+  console.log(chFirstTime);
+  console.log(chFrequency);
 
+  //var chTrainStartPretty = moment.unix(chFirstTime).format("MM/DD/YYYY");
+  // LINES 75-80
+  // VAR NEXT ARRIVAL
+  // VAR MINUTES AWAY
+//set time back 1 yr
+var trainStartConverted = moment(chFirstTime, "hh:mm").subtract(1,"years");
 
-  // Change the HTML to reflect the local value in firebase.
-  //   clickCounter = snapshot.val().clickCount;
+//difference between current time train start time
+var diffTime = moment().diff(moment(trainStartConverted),"minutes")
 
-  // Log the value of the clickCounter
-  //   console.log(clickCounter);
+//time interval duration
+var intervalDur = diffTime % frequency;
+//next train in THIS many mins
+var minsUntil= chFrequency-intervalDur;
 
-  // Change the HTML to reflect the local value in firebase.
-  //   $("#click-value").text(snapshot.val().clickCount);
+var nextTrainMins= moment().add(minsUntil,"m").format("LT");
 
-  // Change the HTML Value using a variable (similar to the above)
-  //   $("#click-value").text(clickCounter);
+var newRow = $("<tr>").append(
+  $("<td>").text(chTrain),
+  $("<td>").text(chDestination), 
+  $("<td>").text(chFirstTime),
+  $("<td>").text(chFrequency),
+  $("<td>").text(nextTrainMins),
+  $("<td>").text(minsUntil)
 
-  // If any errors are experienced, log them to console.
-}, function (errorObject) {
-  console.log("The read failed: " + errorObject.code);
+)
+$("#employee-table").append(newRow);
 });
 
-
-
-// Firebase watcher + initial loader HINT: .on("value")
-// database.ref().on("value", function (snapshot) {
-
-//   // Log everything that's coming out of snapshot
-//   console.log(snapshot.val());
-//   console.log(snapshot.val().train);
-//   console.log(snapshot.val().destination);
-//   console.log(snapshot.val().firstTime);
-//   console.log(snapshot.val().frequency);
-
-// //      // Handle the errors
-//    }, function(errorObject) {
-//   console.log("Errors handled: " + errorObject.code);
-
-// });
-
-//   // Change the HTML to reflect
-  // function(){
-  //     <tr>
-  //     <th scope="col">Employee Name</th>
-  //     <th scope="col">Role</th>
-  //     <th scope="col">Start Date</th>
-  //     <th scope="col">Months Worked</th>
-  //     <th scope="col">Monthly Rate ($)</th>
-  //     <th scope="col">Total Billed ($)</th>
-  // </tr>
-
-
-
-// $("#name-display").text(snapshot.val().name);
-// $("#email-display").text(snapshot.val().role);
-// $("#age-display").text(snapshot.val().monthlyRate);
-// $("#comment-display").text(snapshot.val().startDate);
-
-//      // Handle the errors
-//    }, function(errorObject) {
-//   console.log("Errors handled: " + errorObject.code);
-// });
