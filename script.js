@@ -92,10 +92,3 @@ database.ref().on("child_added", function (childSnapshot) {
   convertTrainTimes(trainData);
 });
 
-//delete white spaces
-//commments
-//reread each func and understand how they work/what they do
-
-//code is modularized
-//more specific
-//step by step more readable.
