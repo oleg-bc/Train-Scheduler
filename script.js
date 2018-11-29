@@ -10,81 +10,92 @@ var config = {
 firebase.initializeApp(config);
 var database = firebase.database();
 
-var train = "";
-var destination = "";
-var firstTime = "";
-var frequency = "";
+
 var dateAdded = "";
 
 
-// button for adding a schedule item 
-$("#submit").on("click", function (event) {
+function sendDataToFireBase(data) {
+  database.ref().push(data);
+};
+
+function handleSubmit(event) {
   event.preventDefault();
   //grabs user input
-  train = $("#train-input").val().trim();
-  destination = $("#destination-input").val().trim();
-  firstTime = $("#first-input").val().trim();
-  frequency = $("#freq-input").val().trim();
-
   var newEntry = {
-    train: train,
-    destination: destination,
-    firstTime: firstTime,
-    frequency: frequency,
-    dateAdded: firebase.database.ServerValue.TIMESTAMP
+      train: $("#train-input").val().trim(),
+      destination: $("#destination-input").val().trim(),
+      firstTime: $("#first-input").val().trim(),
+      frequency: $("#freq-input").val().trim(),
+      dateAdded: firebase.database.ServerValue.TIMESTAMP
   };
-  database.ref().push(newEntry);
+  sendDataToFireBase(newEntry);
+};
 
-  console.log("below: Train, Destination, firstTime, frequency, timestamp ");
-  console.log("train "+train);
-  console.log("destination "+destination);
-  console.log("firstTime "+firstTime);
-  console.log("frequency "+frequency);
-  console.log("added at timestamp "+newEntry.dateAdded);
-  //console.log(newEntry.dateAdded.val());
-});
+// button for adding a schedule item 
+$("#submit").on("click", handleSubmit);
+
+
+function appendTableRow(rowData){
+  var newRow = $("<tr>").append(
+      $("<td>").text(rowData.chTrain),
+      $("<td>").text(rowData.chDestination),
+
+      $("<td>").text(rowData.chFrequency),
+      //$("<td>").text(chFirstTime), //do not display first time 
+      $("<td>").text(rowData.nextTrain),
+      // $("<td>").text(nextTrainMins),
+      $("<td>").text(rowData.tMinutesTillTrain),
+      // $("<td>").text(minsUntil)
+
+  )
+  $("#train-table").append(newRow);
+};
+
+function convertTrainTimes(trainData) {
+  // First Time (pushed back 1 year to make sure it comes before current time)
+  var firstTimeConverted = moment(trainData.chFirstTime, "HH:mm").subtract(1, "years");
+  //  console.log(firstTimeConverted);
+
+  // Difference between the times
+  var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+  //  console.log("DIFFERENCE IN TIME: " + diffTime);
+
+  // Time apart (remainder)
+  var tRemainder = diffTime % trainData.chFrequency;
+  //  console.log(tRemainder);
+
+  // Minute Until Train // below adding a property to obj called 
+  trainData.tMinutesTillTrain = trainData.chFrequency - tRemainder;
+  // console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+  // Next Train// below adding a property to obj called trainData
+  trainData.nextTrain = moment().add(trainData.tMinutesTillTrain, "minutes");
+  //  console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+  //CODE FROM ^^^
+  appendTableRow(trainData);
+
+};
 
 //creates Firebase event for adding train to the DB and a row in the HTML when a user adds entry
-database.ref().on("child_added", function(childSnapshot){
+database.ref().on("child_added", function (childSnapshot) {
   console.log(childSnapshot.val());
 
-  //store everything int a var
-  var chTrain = childSnapshot.val().train;
-  var chDestination = childSnapshot.val().destination;
-  var chFirstTime = childSnapshot.val().firstTime; 
-  var chFrequency = childSnapshot.val().frequency;
-  console.log("from the .on child_added event");
-  console.log(chTrain);
-  console.log(chDestination);
-  console.log(chFirstTime);
-  console.log(chFrequency);
+  //store everything in a var
 
-  //var chTrainStartPretty = moment.unix(chFirstTime).format("MM/DD/YYYY");
-  // LINES 75-80
-  // VAR NEXT ARRIVAL
-  // VAR MINUTES AWAY
-//set time back 1 yr
-var trainStartConverted = moment(chFirstTime, "hh:mm").subtract(1,"years");
-
-//difference between current time train start time
-var diffTime = moment().diff(moment(trainStartConverted),"minutes")
-
-//time interval duration
-var intervalDur = diffTime % frequency;
-//next train in THIS many mins
-var minsUntil= chFrequency-intervalDur;
-
-var nextTrainMins= moment().add(minsUntil,"m").format("LT");
-
-var newRow = $("<tr>").append(
-  $("<td>").text(chTrain),
-  $("<td>").text(chDestination), 
-  $("<td>").text(chFirstTime),
-  $("<td>").text(chFrequency),
-  $("<td>").text(nextTrainMins),
-  $("<td>").text(minsUntil)
-
-)
-$("#employee-table").append(newRow);
+  var trainData = {
+      chTrain: childSnapshot.val().train,
+      chDestination: childSnapshot.val().destination,
+      chFirstTime: childSnapshot.val().firstTime,
+      chFrequency: childSnapshot.val().frequency,
+  };
+  // First Time (pushed back 1 year to make sure it comes before current time)
+  convertTrainTimes(trainData);
 });
 
+//delete white spaces
+//commments
+//reread each func and understand how they work/what they do
+
+//code is modularized
+//more specific
+//step by step more readable.
