@@ -1,6 +1,4 @@
 # Train-Scheduler
-HW7
-
 
 The Project allows a user to add a "train", to an existing schedule.
 
